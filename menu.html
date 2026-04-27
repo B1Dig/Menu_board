@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Dynamic Menu Board</title>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     body {
+      
+      background-image: url('/images/background1.avif');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-attachment: fixed; /* Keeps the background still while scrolling */
+    
       margin: 0;
       font-family: Arial, sans-serif;
       display: flex;
@@ -34,12 +40,19 @@
     .slide.active {
       opacity: 1;
     }
-
     .slide img {
-      max-width: 90%;
-      max-height: 60vh;
+      width: 600px;       
+      height: 500px;      
+      object-fit: cover;  /* crop to fit nicely */
       border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transition: transform 0.3s, box-shadow 0.3s;
     }
+    .slide img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+  }
+    
 
     .slide h2 {
       margin: 10px 0 5px;
@@ -51,28 +64,37 @@
 
     /* RIGHT: MENU */
     .menu {
-      width: 35%;
-      background: #f4f4f4;
+      width: 50%;
+      /*background: #f4f4f4;*/
       padding: 20px;
       overflow-y: auto;
     }
 
     .menu h2 {
-      border-bottom: 2px solid #333;
+      color: white;
+      border-bottom: 2px solid yellow;
       padding-bottom: 5px;
     }
 
     .menu-item {
       margin-bottom: 15px;
+      color: white;
     }
 
     .menu-item h3 {
+      color: aliceblue;
       margin: 0;
     }
 
     .price {
-      color: green;
+      color: aliceblue;
+      color: yellow;
       font-weight: bold;
+    }
+    .qr-container {
+      position: absolute;
+      bottom: 0;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -83,9 +105,15 @@
   <div class="slideshow" id="slideshow"></div>
 
   <!-- the right side section -->
-  <div class="menu" id="menu"></div>
+  <div class="menu" id="menu">
+    <div class="qr-container">
+      <div id="qrcode"></div>
+      <p>📱 Scan to Order</p>
+    </div>
+  </div>
 
   <script>
+    
     let allItems = [];
     let currentIndex = 0;
 
@@ -106,7 +134,7 @@
       const menuDiv = document.getElementById('menu');
 
       // HOT
-      menuDiv.innerHTML += "<h2>🔥 Hot Sandwiches</h2>";
+      menuDiv.innerHTML += "<h2> Hot Sandwiches</h2>";
       menu.hot.forEach(item => {
         menuDiv.innerHTML += `
           <div class="menu-item">
@@ -117,7 +145,7 @@
       });
 
       // COLD
-      menuDiv.innerHTML += "<h2>🥪 Cold Sandwiches</h2>";
+      menuDiv.innerHTML += "<h2> Cold Sandwiches</h2>";
       menu.cold.forEach(item => {
         menuDiv.innerHTML += `
           <div class="menu-item">
@@ -156,6 +184,7 @@
         slides[currentIndex].classList.add('active');
       }, 3000); // change every 3 seconds
     }
+    new QRCode(document.getElementById("qrcode"), {text: "https://umb.sodexomyway.com/en-us/locations/", width: 120, height: 120});
   </script>
 
 </body>
