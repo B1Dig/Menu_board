@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Menu Board</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* LEFT: SLIDESHOW */
+    .slideshow {
+      width: 65%;
+      position: relative;
+      background: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    .slide img {
+      max-width: 90%;
+      max-height: 60vh;
+      border-radius: 10px;
+    }
+
+    .slide h2 {
+      margin: 10px 0 5px;
+    }
+
+    .slide p {
+      margin: 5px;
+    }
+
+    /* RIGHT: MENU */
+    .menu {
+      width: 35%;
+      background: #f4f4f4;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .menu h2 {
+      border-bottom: 2px solid #333;
+      padding-bottom: 5px;
+    }
+
+    .menu-item {
+      margin-bottom: 15px;
+    }
+
+    .menu-item h3 {
+      margin: 0;
+    }
+
+    .price {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- the left side section  -->
+  <div class="slideshow" id="slideshow"></div>
+
+  <!-- the right side section -->
+  <div class="menu" id="menu"></div>
+
+  <script>
+    let allItems = [];
+    let currentIndex = 0;
+
+    fetch('menu_cat.json')
+      .then(response => response.json())
+      .then(data => {
+        const menu = data.menu;
+
+        // Combine hot + cold into one array for slideshow
+        allItems = [...menu.hot, ...menu.cold];
+
+        renderMenu(menu);
+        renderSlides(allItems);
+        startSlideshow();
+      });
+
+    function renderMenu(menu) {
+      const menuDiv = document.getElementById('menu');
+
+      // HOT
+      menuDiv.innerHTML += "<h2>🔥 Hot Sandwiches</h2>";
+      menu.hot.forEach(item => {
+        menuDiv.innerHTML += `
+          <div class="menu-item">
+            <h3>${item.name} <span class="price">$${item.price}</span></h3>
+            <p>${item.description}</p>
+          </div>
+        `;
+      });
+
+      // COLD
+      menuDiv.innerHTML += "<h2>🥪 Cold Sandwiches</h2>";
+      menu.cold.forEach(item => {
+        menuDiv.innerHTML += `
+          <div class="menu-item">
+            <h3>${item.name} <span class="price">$${item.price}</span></h3>
+            <p>${item.description}</p>
+          </div>
+        `;
+      });
+    }
+
+    function renderSlides(items) {
+      const slideshow = document.getElementById('slideshow');
+
+      items.forEach((item, index) => {
+        const slide = document.createElement('div');
+        slide.classList.add('slide');
+        if (index === 0) slide.classList.add('active');
+
+        slide.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <h2>${item.name}</h2>
+          <p>${item.description}</p>
+          <p class="price">$${item.price}</p>
+        `;
+
+        slideshow.appendChild(slide);
+      });
+    }
+
+    function startSlideshow() {
+      const slides = document.querySelectorAll('.slide');
+
+      setInterval(() => {
+        slides[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % slides.length;
+        slides[currentIndex].classList.add('active');
+      }, 3000); // change every 3 seconds
+    }
+  </script>
+
+</body>
+</html>
